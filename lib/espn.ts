@@ -9,6 +9,32 @@ export interface Game {
     status: string
   }
   
+  // Minimal types for the parts of the ESPN response we use
+  type EspnTeam = {
+    displayName: string
+    logo?: string
+  }
+  
+  type EspnCompetitor = {
+    homeAway: 'home' | 'away'
+    team: EspnTeam
+  }
+  
+  type EspnCompetition = {
+    competitors: EspnCompetitor[]
+  }
+  
+  type EspnEvent = {
+    id: string
+    date: string
+    status?: {
+      type?: {
+        name?: string
+      }
+    }
+    competitions?: EspnCompetition[]
+  }
+  
   export async function getUpcomingGames(league: 'nba' | 'nfl' | 'mlb' = 'nba'): Promise<Game[]> {
     try {
       const response = await fetch(
@@ -23,16 +49,24 @@ export interface Game {
   
       const data = await response.json()
   
-      const games: Game[] = data.events.map((event: any) => ({
-        id: event.id,
-        homeTeam: event.competitions[0].competitors.find((c: any) => c.homeAway === 'home')?.team.displayName || 'TBD',
-        awayTeam: event.competitions[0].competitors.find((c: any) => c.homeAway === 'away')?.team.displayName || 'TBD',
-        homeTeamLogo: event.competitions[0].competitors.find((c: any) => c.homeAway === 'home')?.team.logo,
-        awayTeamLogo: event.competitions[0].competitors.find((c: any) => c.homeAway === 'away')?.team.logo,
-        gameDate: event.date,
-        league: league.toUpperCase(),
-        status: event.status.type.name,
-      }))
+      const events: EspnEvent[] = Array.isArray(data.events) ? data.events : []
+  
+      const games: Game[] = events.map((event) => {
+        const competition = event.competitions?.[0]
+        const home = competition?.competitors.find((c) => c.homeAway === 'home')
+        const away = competition?.competitors.find((c) => c.homeAway === 'away')
+  
+        return {
+          id: event.id,
+          homeTeam: home?.team.displayName ?? 'TBD',
+          awayTeam: away?.team.displayName ?? 'TBD',
+          homeTeamLogo: home?.team.logo,
+          awayTeamLogo: away?.team.logo,
+          gameDate: event.date,
+          league: league.toUpperCase(),
+          status: event.status?.type?.name ?? 'unknown',
+        }
+      })
   
       return games
     } catch (error) {
