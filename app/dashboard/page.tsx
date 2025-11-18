@@ -1,0 +1,69 @@
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
+import { redirect } from 'next/navigation'
+import { getUpcomingGames } from '@/lib/espn'
+
+export default async function DashboardPage() {
+  const cookieStore = await cookies()
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    redirect('/login')
+  }
+
+  const games = await getUpcomingGames('nba')
+
+  return (
+    <main className="min-h-screen bg-slate-900 p-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-8">Dashboard</h1>
+        
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-white mb-4">Upcoming NBA Games</h2>
+          <div className="grid gap-4">
+            {games.slice(0, 5).map((game) => (
+              <div key={game.id} className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    {game.awayTeamLogo && (
+                      <img src={game.awayTeamLogo} alt={game.awayTeam} className="w-8 h-8" />
+                    )}
+                    <span className="text-white font-medium">{game.awayTeam}</span>
+                  </div>
+                  <span className="text-slate-400">@</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-white font-medium">{game.homeTeam}</span>
+                    {game.homeTeamLogo && (
+                      <img src={game.homeTeamLogo} alt={game.homeTeam} className="w-8 h-8" />
+                    )}
+                  </div>
+                  <span className="text-slate-400 text-sm">
+                    {new Date(game.gameDate).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
