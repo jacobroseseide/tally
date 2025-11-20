@@ -50,23 +50,39 @@ export default async function DashboardPage() {
           <div className="grid gap-4">
             {games.slice(0, 5).map((game) => (
               <div key={game.id} className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between gap-8">
+                  {/* Away Team */}
+                  <div className="flex items-center gap-4 flex-1">
                     {game.awayTeamLogo && (
                       <img src={game.awayTeamLogo} alt={game.awayTeam} className="w-8 h-8" />
                     )}
                     <span className="text-white font-medium">{game.awayTeam}</span>
                   </div>
+                  
                   <span className="text-slate-400">@</span>
-                  <div className="flex items-center gap-4">
+                  
+                  {/* Home Team */}
+                  <div className="flex items-center gap-4 flex-1 justify-end">
                     <span className="text-white font-medium">{game.homeTeam}</span>
                     {game.homeTeamLogo && (
                       <img src={game.homeTeamLogo} alt={game.homeTeam} className="w-8 h-8" />
                     )}
                   </div>
-                  <span className="text-slate-400 text-sm">
-                    {new Date(game.gameDate).toLocaleString()}
-                  </span>
+
+                  {/* Game Info & Bet Button */}
+                  <div className="text-right min-w-[200px]">
+                    <p className="text-slate-400 text-sm mb-2">
+                      {new Date(game.gameDate).toLocaleString()}
+                    </p>
+                    <Link
+                      href={`/bets/create?gameId=${game.id}&homeTeam=${encodeURIComponent(
+                        game.homeTeam
+                      )}&awayTeam=${encodeURIComponent(game.awayTeam)}&gameDate=${game.gameDate}`}
+                      className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition"
+                    >
+                      Bet on this game
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
