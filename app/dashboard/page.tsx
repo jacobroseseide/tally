@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import { getUpcomingGames } from '@/lib/espn'
+import Link from 'next/link'
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -35,6 +36,14 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-slate-900 p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-white mb-8">Dashboard</h1>
+        <div className="flex gap-4 mb-8">
+          <Link
+            href="/friends"
+            className="rounded-lg bg-slate-800 border border-slate-700 px-6 py-3 text-white hover:bg-slate-700 transition"
+          >
+            Manage Friends
+          </Link>
+        </div>
         
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-white mb-4">Upcoming NBA Games</h2>
