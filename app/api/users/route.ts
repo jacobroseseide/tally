@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
     }
   )
 
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser()
+
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('q')
 
@@ -28,11 +31,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ users: [] })
   }
 
-  const { data: users, error } = await supabase
+  // Build query - exclude current user
+  let usersQuery = supabase
     .from('profiles')
     .select('id, username')
     .ilike('username', `%${query}%`)
     .limit(10)
+
+  // If user is logged in, exclude them from results
+  if (user) {
+    usersQuery = usersQuery.neq('id', user.id)
+  }
+
+  const { data: users, error } = await usersQuery
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

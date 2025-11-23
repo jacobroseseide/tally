@@ -36,6 +36,8 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-slate-900 p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-white mb-8">Dashboard</h1>
+        
+        {/* Navigation Buttons */}
         <div className="flex gap-4 mb-8">
           <Link
             href="/friends"
@@ -43,8 +45,15 @@ export default async function DashboardPage() {
           >
             Manage Friends
           </Link>
+          <Link
+            href="/bets"
+            className="rounded-lg bg-slate-800 border border-slate-700 px-6 py-3 text-white hover:bg-slate-700 transition"
+          >
+            My Bets
+          </Link>
         </div>
         
+        {/* Upcoming Games */}
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-white mb-4">Upcoming NBA Games</h2>
           <div className="grid gap-4">
@@ -77,7 +86,9 @@ export default async function DashboardPage() {
                     <Link
                       href={`/bets/create?gameId=${game.id}&homeTeam=${encodeURIComponent(
                         game.homeTeam
-                      )}&awayTeam=${encodeURIComponent(game.awayTeam)}&gameDate=${game.gameDate}`}
+                      )}&awayTeam=${encodeURIComponent(game.awayTeam)}&gameDate=${game.gameDate}&homeTeamLogo=${encodeURIComponent(
+                        game.homeTeamLogo || ''
+                      )}&awayTeamLogo=${encodeURIComponent(game.awayTeamLogo || '')}`}
                       className="inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition"
                     >
                       Bet on this game

@@ -20,6 +20,8 @@ export default function CreateBetPage() {
   const homeTeam = searchParams.get('homeTeam')
   const awayTeam = searchParams.get('awayTeam')
   const gameDate = searchParams.get('gameDate')
+  const homeTeamLogo = searchParams.get('homeTeamLogo')
+  const awayTeamLogo = searchParams.get('awayTeamLogo')
 
   const [friends, setFriends] = useState<Friend[]>([])
   const [selectedFriend, setSelectedFriend] = useState('')
@@ -27,6 +29,8 @@ export default function CreateBetPage() {
   const [pick, setPick] = useState<'home' | 'away'>('home')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+
 
   useEffect(() => {
     fetchFriends()
@@ -108,18 +112,24 @@ export default function CreateBetPage() {
 
         <h1 className="text-4xl font-bold text-white mb-8">Create Bet</h1>
 
-        {/* Game Info */}
-        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Game</h2>
-          <div className="flex items-center justify-center gap-4">
-            <span className="text-white font-medium">{awayTeam}</span>
-            <span className="text-slate-400">@</span>
-            <span className="text-white font-medium">{homeTeam}</span>
-          </div>
-          <p className="text-slate-400 text-sm text-center mt-2">
-            {new Date(gameDate || '').toLocaleString()}
-          </p>
+      {/* Game Info */}
+      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 mb-8">
+        <h2 className="text-lg font-semibold text-white mb-4">Game</h2>
+        <div className="flex items-center justify-center gap-4">
+          {awayTeamLogo && (
+            <img src={awayTeamLogo} alt={awayTeam || ''} className="w-10 h-10" />
+          )}
+          <span className="text-white font-medium">{awayTeam}</span>
+          <span className="text-slate-400">@</span>
+          <span className="text-white font-medium">{homeTeam}</span>
+          {homeTeamLogo && (
+            <img src={homeTeamLogo} alt={homeTeam || ''} className="w-10 h-10" />
+          )}
         </div>
+        <p className="text-slate-400 text-sm text-center mt-2">
+          {new Date(gameDate || '').toLocaleString()}
+        </p>
+      </div>
 
         <form onSubmit={handleCreateBet} className="space-y-6">
           {/* Pick your team */}
